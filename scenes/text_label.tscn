@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://bm1cfxa7lij57"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_0wlwq"]
+font_size = 24
+font_color = Color(0, 0, 0, 1)
+
+[node name="Label" type="Label" unique_id=1785046677]
+offset_right = 48.0
+offset_bottom = 48.0
+text = "1"
+label_settings = SubResource("LabelSettings_0wlwq")
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true

@@ -1,8 +1,0 @@
-[gd_scene format=3 uid="uid://bysai0v3882ms"]
-
-[ext_resource type="Texture2D" uid="uid://c4elp5p2wcbe" path="res://textures/fire.png" id="1_scv62"]
-
-[node name="Sprite2D" type="Sprite2D" unique_id=1376788568]
-modulate = Color(1, 0, 0, 1)
-scale = Vector2(0.75, 0.75)
-texture = ExtResource("1_scv62")

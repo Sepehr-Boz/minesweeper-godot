@@ -1,39 +1,16 @@
 [gd_scene format=3 uid="uid://csseau0rdnfm6"]
 
-[ext_resource type="Texture2D" uid="uid://co2eqrheydkxr" path="res://textures/panel-015.png" id="1_p57ef"]
-[ext_resource type="Texture2D" uid="uid://ouj8ncjdaba4" path="res://textures/panel-transparent-center-015.png" id="2_u5sy4"]
-[ext_resource type="Script" uid="uid://c6df5dnw4hnok" path="res://scripts/grid_generator.gd" id="3_gee14"]
-[ext_resource type="PackedScene" uid="uid://d1s0gvsj6tgpw" path="res://scenes/flag_icon.tscn" id="4_0tnpc"]
-[ext_resource type="PackedScene" uid="uid://bm1cfxa7lij57" path="res://scenes/text_label.tscn" id="5_vtaks"]
-[ext_resource type="PackedScene" uid="uid://bysai0v3882ms" path="res://scenes/bomb_icon.tscn" id="6_kvpfn"]
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ryrav"]
-resource_name = "Hidden"
-texture = ExtResource("1_p57ef")
-texture_region_size = Vector2i(48, 48)
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_eow3j"]
-resource_name = "Shown"
-texture = ExtResource("2_u5sy4")
-texture_region_size = Vector2i(48, 48)
-0:0/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_sle3t"]
-tile_size = Vector2i(48, 48)
-sources/0 = SubResource("TileSetAtlasSource_ryrav")
-sources/1 = SubResource("TileSetAtlasSource_eow3j")
+[ext_resource type="Script" uid="uid://cj2y7drjlcgm5" path="res://scripts/GridManager.gd" id="7_gee14"]
 
 [node name="Node2D" type="Node2D" unique_id=448664739]
 
-[node name="Square Layer" type="TileMapLayer" parent="." unique_id=1079169214]
-tile_set = SubResource("TileSet_sle3t")
-script = ExtResource("3_gee14")
-_width = 8
-_height = 6
-_flag_asset = ExtResource("4_0tnpc")
-_text_asset = ExtResource("5_vtaks")
-_bomb_asset = ExtResource("6_kvpfn")
-
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1368606317]
 anchor_mode = 0
+
+[node name="Grid" type="Node2D" parent="." unique_id=1411013764]
+position = Vector2(24, 24)
+script = ExtResource("7_gee14")
+
+[node name="Cell Container" type="Node2D" parent="Grid" unique_id=1368871321]
+
+[node name="Shown Container" type="Node2D" parent="Grid" unique_id=1534689607]

@@ -1,0 +1,68 @@
+[gd_scene format=3 uid="uid://bcwbwfadqw7aj"]
+
+[ext_resource type="Texture2D" uid="uid://co2eqrheydkxr" path="res://textures/panel-015.png" id="1_152gs"]
+[ext_resource type="Texture2D" uid="uid://dfi7wo70023fe" path="res://textures/flag_triangle.png" id="1_utojm"]
+[ext_resource type="Script" uid="uid://bh748xv37l21o" path="res://scripts/GridCell.gd" id="2_7hd05"]
+[ext_resource type="Texture2D" uid="uid://ouj8ncjdaba4" path="res://textures/panel-transparent-center-015.png" id="2_hmtff"]
+[ext_resource type="Texture2D" uid="uid://c4elp5p2wcbe" path="res://textures/fire.png" id="4_8pdpl"]
+
+[node name="Grid Cell" type="TextureButton" unique_id=1210185576]
+clip_contents = true
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_right = 48.0
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+toggle_mode = true
+button_mask = 3
+texture_normal = ExtResource("1_152gs")
+texture_disabled = ExtResource("2_hmtff")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("2_7hd05")
+
+[node name="Number" type="RichTextLabel" parent="." unique_id=796419398]
+visible = false
+modulate = Color(0, 0, 0, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "3"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Bomb" type="TextureRect" parent="." unique_id=1874715890]
+visible = false
+modulate = Color(1, 0, 0, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("4_8pdpl")
+
+[node name="Flag" type="TextureRect" parent="." unique_id=1327149443]
+visible = false
+modulate = Color(1, 0, 0, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("1_utojm")

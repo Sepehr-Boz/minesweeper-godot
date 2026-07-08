@@ -33,6 +33,7 @@ func generate_grid(width: int, height: int) -> void:
 			if num_bombs_left_to_place > 0 && _rng.randf() > 0.5:
 				num_bombs_left_to_place -= 1
 				instance.has_bomb = true
+				print("bomb at %v" % pos)
 			row.append(instance)
 		_cells.append(row)
 	# loop through all the cells to find their neighbours and add them
@@ -62,9 +63,23 @@ func generate_grid(width: int, height: int) -> void:
 			cell.neighbours = neighbours
 
 func _on_cell_changed(coord: Vector2i, state) -> void:
-	# TODO
 	print("cell at %v set to %s" % [coord, state])
+	# check if all the bomb cells have been flagged correctly
+	if state == 3: # 3 = BOMBED
+		print("you lost the game")
+		get_tree().quit()
+	elif _has_won():
+		print("you win the game")
+		get_tree().quit()
 
+func _has_won() -> bool:
+	# brute force search: loop through all nodes and check if for each has_bomb
+	# cell if the cell is also flagged
+	for row in _cells:
+		for cell in row:
+			if cell.has_bomb and not cell._state == 2: # 2 = FLAGGED
+				return false
+	return true
 
 func set_mode(mode: Mode) -> void:
 	_mode = mode

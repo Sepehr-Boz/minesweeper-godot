@@ -6,6 +6,7 @@
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1368606317]
 anchor_mode = 0
+zoom = Vector2(0.79, 0.79)
 
 [node name="Grid" type="Node2D" parent="." unique_id=1411013764]
 position = Vector2(24, 24)

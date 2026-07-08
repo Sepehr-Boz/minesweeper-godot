@@ -13,6 +13,8 @@ var has_bomb: bool = false
 var _state: CellState = CellState.HIDDEN
 
 func _gui_input(event: InputEvent) -> void:
+	if disabled:
+		return
 	if event is InputEventMouseButton and event.is_pressed():
 		event = event as InputEventMouseButton
 		if event.button_index == MOUSE_BUTTON_LEFT:
@@ -20,8 +22,8 @@ func _gui_input(event: InputEvent) -> void:
 				_state = CellState.BOMBED
 				_is_bombed()
 			else:
+				expand()
 				_state = CellState.SHOWN
-				_is_shown()
 			on_cell_changed.emit(coordinate, _state)
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
 			if _state == CellState.HIDDEN:
@@ -38,6 +40,17 @@ func _get_num_bombs() -> int:
 		if cell.has_bomb:
 			num += 1
 	return num
+
+func expand() -> void:
+	if _state == CellState.SHOWN:
+		return
+	# recursively call other cells to also show themselves if they are also within a 0
+	# radius of a bomb until a cell with a non-0 number of surrounding bombs is found
+	_is_shown()
+	_state = CellState.SHOWN
+	if _get_num_bombs() == 0 and not has_bomb:
+		for cell in neighbours:
+			cell.expand()
 
 func _is_shown() -> void:
 	_label.visible = true

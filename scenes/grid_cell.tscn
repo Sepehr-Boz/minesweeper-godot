@@ -6,6 +6,10 @@
 [ext_resource type="Texture2D" uid="uid://ouj8ncjdaba4" path="res://textures/panel-transparent-center-015.png" id="2_hmtff"]
 [ext_resource type="Texture2D" uid="uid://c4elp5p2wcbe" path="res://textures/fire.png" id="4_8pdpl"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_0wlwq"]
+font_size = 32
+font_color = Color(0, 0, 0, 1)
+
 [node name="Grid Cell" type="TextureButton" unique_id=1210185576]
 clip_contents = true
 anchors_preset = 8
@@ -25,9 +29,8 @@ ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("2_7hd05")
 
-[node name="Number" type="RichTextLabel" parent="." unique_id=796419398]
+[node name="Number" type="Label" parent="." unique_id=1023649836]
 visible = false
-modulate = Color(0, 0, 0, 1)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,7 +38,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "3"
-fit_content = true
+label_settings = SubResource("LabelSettings_0wlwq")
 horizontal_alignment = 1
 vertical_alignment = 1
 

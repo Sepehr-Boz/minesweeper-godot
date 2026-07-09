@@ -3,7 +3,7 @@ extends TextureButton
 enum CellState {HIDDEN, SHOWN, FLAGGED, BOMBED}
 signal on_cell_changed(coord: Vector2i, state: CellState)
 
-@onready var _label: RichTextLabel = $Number
+@onready var _label: Label = $Number
 @onready var _bomb_icon: Node = $Bomb
 @onready var _flag_icon: Node = $Flag
 
@@ -54,7 +54,11 @@ func expand() -> void:
 
 func _is_shown() -> void:
 	_label.visible = true
-	_label.text = "%d" % _get_num_bombs()
+	var num_bombs: int = _get_num_bombs()
+	if num_bombs == 0:
+		_label.text = ""
+	else:
+		_label.text = "%d" % _get_num_bombs()
 	_bomb_icon.visible = false
 	_flag_icon.visible = false
 	self.disabled = true

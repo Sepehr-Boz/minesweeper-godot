@@ -11,6 +11,7 @@ enum Difficulty {EASY, MEDIUM, HARD}
 
 var _cell_asset: PackedScene = preload("res://scenes/grid_cell.tscn")
 @onready var _cell_container: Node = $"Cell Container"
+@onready var _camera: Camera2D = $"../Camera2D"
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _cells: Array[Array] = []
 
@@ -19,6 +20,13 @@ func _ready() -> void:
 	generate_grid(_width, _height)
 
 func generate_grid(width: int, height: int) -> void:
+	_camera.position = Vector2(width * 24, height * 24)
+	var vp: Vector2 = get_viewport_rect().size
+	print(vp)
+	var grid_size: Vector2 = Vector2(float(width) * 52, float(height) * 52)
+	print(grid_size)
+	var zoom: float = min(vp.x / grid_size.x, vp.y / grid_size.y)
+	_camera.zoom = Vector2(zoom, zoom)
 	# set all the cells and save them
 	var num_bombs_left_to_place: int = _num_bombs
 	for i in width:

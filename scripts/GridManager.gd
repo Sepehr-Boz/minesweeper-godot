@@ -25,7 +25,9 @@ func generate_grid(width: int, height: int) -> void:
 	print(vp)
 	var grid_size: Vector2 = Vector2(float(width) * 52, float(height) * 52)
 	print(grid_size)
+	var grid_rect: Rect2 = Rect2(Vector2.ZERO, Vector2(width * 48, height * 48))
 	var zoom: float = min(vp.x / grid_size.x, vp.y / grid_size.y)
+	_camera.rect = grid_rect
 	_camera.zoom = Vector2(zoom, zoom)
 	# set all the cells and save them
 	var num_bombs_left_to_place: int = _num_bombs
@@ -75,6 +77,15 @@ func _on_cell_changed(coord: Vector2i, state) -> void:
 	# check if all the bomb cells have been flagged correctly
 	if state == 3: # 3 = BOMBED
 		print("you lost the game")
+		# loop through all the cells and if its a bomb one then show it gradually,
+		# then quit at the end
+		for row in _cells:
+			for cell in row:
+				if not cell.has_bomb:
+					continue
+				await get_tree().create_timer(0.15).timeout
+				cell._is_bombed()
+		await get_tree().create_timer(2.0).timeout
 		get_tree().quit()
 	elif _has_won():
 		print("you win the game")
@@ -90,7 +101,33 @@ func _has_won() -> bool:
 	return true
 
 func set_mode(mode: Mode) -> void:
+	if mode == _mode:
+		return
+	# if mode = NORMAL then make a rectangular grid
+	# if mode = CUSTOM then make a randomly-connected shape grid with cells that
+	# can show either surrounding square 8 or surrounding square 24
 	_mode = mode
-	
+	if _mode == Mode.NORMAL:
+		generate_grid(_width, _height)
+	else:
+		# TODO
+		pass
+
 func set_difficulty(diff: Difficulty) -> void:
+	# diffuclty determines max size of board and number of bombs
+	if diff == _difficulty:
+		return
+	
 	_difficulty = diff
+	if _difficulty == Difficulty.EASY:
+		_width = 8
+		_height = 16
+		generate_grid(_width, _height)
+	elif _difficulty == Difficulty.MEDIUM:
+		_width = 16
+		_height = 24
+		generate_grid(_width, _height)
+	elif _difficulty == Difficulty.HARD:
+		_width = 24
+		_height = 32
+		generate_grid(_width, _height)

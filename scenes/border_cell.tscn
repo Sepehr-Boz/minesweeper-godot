@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b234vrwrc6375"]
+
+[node name="Border Cell" type="ColorRect" unique_id=1419001043]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+color = Color(0, 0, 0, 1)

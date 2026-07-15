@@ -10,12 +10,10 @@ zoom = Vector2(0.5, 0.5)
 script = ExtResource("1_yqjtg")
 _center_increment = 0.01509999999999999
 
-[node name="Grid" type="Node2D" parent="." unique_id=1411013764]
-position = Vector2(24, 24)
+[node name="Grid" type="GridContainer" parent="." unique_id=2059631164]
+offset_right = 100.0
+offset_bottom = 100.0
+theme_override_constants/h_separation = 0
+theme_override_constants/v_separation = 0
+columns = 12
 script = ExtResource("7_gee14")
-_width = 8
-_height = 32
-
-[node name="Cell Container" type="Node2D" parent="Grid" unique_id=1368871321]
-
-[node name="Shown Container" type="Node2D" parent="Grid" unique_id=1534689607]

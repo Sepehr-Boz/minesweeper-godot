@@ -20,10 +20,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		event = event as InputEventMouseButton
 		# if scrollwheel used then zoom in/out
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			zoom -= _zoom_increment_vector
+			zoom += _zoom_increment_vector
 			zoom = clamp(zoom, _min_zoom_vector, _max_zoom_vector)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			zoom += _zoom_increment_vector
+			zoom -= _zoom_increment_vector
 			zoom = clamp(zoom, _min_zoom_vector, _max_zoom_vector)
 		# if left click down somewhere thats not a cell then start dragging
 	 	# once left click released then stop dragging

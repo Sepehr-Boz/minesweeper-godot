@@ -1,4 +1,4 @@
-extends Node2D
+extends GridContainer
 
 enum Mode {NORMAL, CUSTOM}
 enum Difficulty {EASY, MEDIUM, HARD}
@@ -6,49 +6,47 @@ enum Difficulty {EASY, MEDIUM, HARD}
 @export var _mode: Mode = Mode.NORMAL
 @export var _difficulty: Difficulty = Difficulty.EASY
 @export var _width: int = 16
-@export var _height: int = 16
 @export var _num_bombs: int = 16
 
-var _cell_asset: PackedScene = preload("res://scenes/grid_cell.tscn")
-@onready var _cell_container: Node = $"Cell Container"
+var _grid_cell_asset: PackedScene = preload("res://scenes/grid_cell.tscn")
+var _grid_cell_asset2: PackedScene = preload("res://scenes/grid_cell_2.tscn")
+var _border_cell_asset: PackedScene = preload("res://scenes/border_cell.tscn")
 @onready var _camera: Camera2D = $"../Camera2D"
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _cells: Array[Array] = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	generate_grid(_width, _height)
+	generate_grid(_width)
 
-func generate_grid(width: int, height: int) -> void:
-	_camera.position = Vector2(width * 24, height * 24)
-	var vp: Vector2 = get_viewport_rect().size
-	print(vp)
-	var grid_size: Vector2 = Vector2(float(width) * 52, float(height) * 52)
-	print(grid_size)
-	var grid_rect: Rect2 = Rect2(Vector2.ZERO, Vector2(width * 48, height * 48))
-	var zoom: float = min(vp.x / grid_size.x, vp.y / grid_size.y)
-	_camera.rect = grid_rect
-	_camera.zoom = Vector2(zoom, zoom)
-	# set all the cells and save them
-	var num_bombs_left_to_place: int = _num_bombs
-	for i in width:
+func generate_grid(width) -> void:
+	columns = width + 2 # surrounding left and right and top and down cells are
+	# for borders
+	size = Vector2i(columns * 48, columns * 48)
+	
+	# spawn in all the cells into the container
+	for i in width + 2:
 		var row: Array[Node] = []
-		for j in height:
-			var instance: Node = _cell_asset.instantiate()
-			_cell_container.add_child(instance)
-			var pos: Vector2i = Vector2i(i, j)
-			instance.position = pos * 48
-			instance.coordinate = pos
-			instance.on_cell_changed.connect(_on_cell_changed)
-			if num_bombs_left_to_place > 0 && _rng.randf() > 0.5:
-				num_bombs_left_to_place -= 1
-				instance.has_bomb = true
-				print("bomb at %v" % pos)
-			row.append(instance)
-		_cells.append(row)
+		for j in width + 2:
+			if i == 0 or i == width + 1 or j == 0 or j == width + 1:
+				var instance: Node = _border_cell_asset.instantiate()
+				add_child(instance)
+			else:
+				var instance: Node
+				if (i + j) % 2 == 0:
+					instance = _grid_cell_asset.instantiate()
+				else:
+					instance = _grid_cell_asset2.instantiate()
+				add_child(instance)
+				instance.coordinate = Vector2i(i - 1, j - 1)
+				instance.on_cell_changed.connect(_on_cell_changed)
+				row.append(instance)
+		if len(row) > 0:
+			_cells.append(row)
+		
 	# loop through all the cells to find their neighbours and add them
 	for i in width:
-		for j in height:
+		for j in width:
 			var cell: Node = _cells[i][j]
 			var neighbours: Array[Node] = []
 			# top row
@@ -64,13 +62,39 @@ func generate_grid(width: int, height: int) -> void:
 			if i < width - 1:
 				neighbours.append(_cells[i + 1][j])
 			# bottom row
-			if 0 < i and j < height - 1:
+			if 0 < i and j < width - 1:
 				neighbours.append(_cells[i - 1][j + 1])
-			if j < height - 1:
+			if j < width - 1:
 				neighbours.append(_cells[i][j + 1])
-			if j < height - 1 and i < width - 1:
+			if j < width - 1 and i < width - 1:
 				neighbours.append(_cells[i + 1][j + 1])
 			cell.neighbours = neighbours
+	
+	# place bombs on random cells
+	var _bombs_to_place: int = _num_bombs
+	while _bombs_to_place > 0:
+		var num: int = _rng.randi_range(0, width * width - 1)
+		var coord: Vector2i = Vector2i(num % width, num / width)
+		if _cells[coord.x][coord.y].has_bomb:
+			continue
+		else:
+			_cells[coord.x][coord.y].has_bomb = true
+			_bombs_to_place -= 1
+			print("bomb at %v" % coord)
+	
+	# set the camera properties
+	var vp: Vector2 = get_viewport_rect().size
+	print(vp)
+	var grid_size: Vector2 = Vector2(float(width) * 48, float(width) * 48)
+	print(grid_size)
+	var grid_rect: Rect2 = Rect2(Vector2.ZERO, Vector2((width + 2) * 48, (width + 2) * 48))
+	var zoom: float = min(vp.x / grid_size.x, vp.y / grid_size.y)
+	_camera.rect = grid_rect
+	_camera.zoom = Vector2(zoom, zoom)
+	_camera.position = grid_rect.get_center()
+
+	
+
 
 func _on_cell_changed(coord: Vector2i, state) -> void:
 	print("cell at %v set to %s" % [coord, state])
@@ -108,7 +132,7 @@ func set_mode(mode: Mode) -> void:
 	# can show either surrounding square 8 or surrounding square 24
 	_mode = mode
 	if _mode == Mode.NORMAL:
-		generate_grid(_width, _height)
+		generate_grid(_width)
 	else:
 		# TODO
 		pass
@@ -121,13 +145,13 @@ func set_difficulty(diff: Difficulty) -> void:
 	_difficulty = diff
 	if _difficulty == Difficulty.EASY:
 		_width = 8
-		_height = 16
-		generate_grid(_width, _height)
+		_num_bombs = 16
+		generate_grid(_width)
 	elif _difficulty == Difficulty.MEDIUM:
-		_width = 16
-		_height = 24
-		generate_grid(_width, _height)
+		_width = 12
+		_num_bombs = 24
+		generate_grid(_width)
 	elif _difficulty == Difficulty.HARD:
-		_width = 24
-		_height = 32
-		generate_grid(_width, _height)
+		_width = 18
+		_num_bombs = 36
+		generate_grid(_width)

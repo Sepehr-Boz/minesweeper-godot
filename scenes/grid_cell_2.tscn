@@ -1,12 +1,12 @@
-[gd_scene format=3 uid="uid://bcwbwfadqw7aj"]
+[gd_scene format=3 uid="uid://bovmsu8qv4q2h"]
 
-[ext_resource type="Texture2D" uid="uid://dfi7wo70023fe" path="res://textures/flag_triangle.png" id="1_utojm"]
-[ext_resource type="Script" uid="uid://bh748xv37l21o" path="res://scripts/GridCell.gd" id="2_7hd05"]
+[ext_resource type="Texture2D" uid="uid://dfi7wo70023fe" path="res://textures/flag_triangle.png" id="1_vhfhy"]
+[ext_resource type="Script" uid="uid://bh748xv37l21o" path="res://scripts/GridCell.gd" id="2_xqw7n"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lwqr5"]
-bg_color = Color(0.29703808, 0.7020306, 0.29822078, 1)
+bg_color = Color(0.2146482, 0.5231599, 0.2146482, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hiqac"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vhfhy"]
 bg_color = Color(0.71907645, 0.71907645, 0.71907645, 1)
 border_width_left = 1
 border_width_top = 1
@@ -25,9 +25,9 @@ theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
 theme_override_colors/icon_normal_color = Color(1, 0, 0, 1)
 theme_override_colors/icon_disabled_color = Color(1, 0, 0, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_lwqr5")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_hiqac")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_vhfhy")
 text = "5"
-icon = ExtResource("1_utojm")
+icon = ExtResource("1_vhfhy")
 icon_alignment = 1
 expand_icon = true
-script = ExtResource("2_7hd05")
+script = ExtResource("2_xqw7n")

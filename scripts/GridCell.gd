@@ -15,16 +15,11 @@ func _ready() -> void:
 	_is_hidden()
 
 func _gui_input(event: InputEvent) -> void:
-	if disabled:
+	if disabled or Engine.time_scale == 0:
 		return
 	if event is InputEventMouseButton and event.is_pressed():
 		event = event as InputEventMouseButton
-		if event.button_index == MOUSE_BUTTON_LEFT and _state == CellState.SHOWN and _get_num_flags() == _get_num_flags():
-			# TODO: reveal the surrounding cells when clicked on it again
-			# IFF there are n flagged where n is the number of bombs shown on
-			# this cell
-			pass
-		elif event.button_index == MOUSE_BUTTON_LEFT and _state == CellState.HIDDEN:
+		if event.button_index == MOUSE_BUTTON_LEFT and _state == CellState.HIDDEN:
 			if has_bomb:
 				_state = CellState.BOMBED
 				_is_bombed()
@@ -32,7 +27,7 @@ func _gui_input(event: InputEvent) -> void:
 				expand()
 				_state = CellState.SHOWN
 			on_cell_changed.emit(coordinate, _state)
-		elif event.button_index == MOUSE_BUTTON_RIGHT and _state == CellState.HIDDEN:
+		elif event.button_index == MOUSE_BUTTON_RIGHT and (_state == CellState.HIDDEN or _state == CellState.FLAGGED):
 			if _state == CellState.HIDDEN:
 				_state = CellState.FLAGGED
 				_is_flagged()
@@ -60,11 +55,9 @@ func _get_num_flags() -> int:
 func expand() -> void:
 	if _state == CellState.SHOWN or _state == CellState.FLAGGED:
 		return
-	# recursively call other cells to also show themselves if they are also within a 0
-	# radius of a bomb until a cell with a non-0 number of surrounding bombs is found
 	_is_shown()
 	_state = CellState.SHOWN
-	if (_get_num_bombs() == 0 and not has_bomb) or _get_num_bombs() == _get_num_flags():
+	if _get_num_bombs() == 0 and not has_bomb:
 		for cell in neighbours:
 			cell.expand()
 

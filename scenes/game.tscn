@@ -1,7 +1,11 @@
 [gd_scene format=3 uid="uid://csseau0rdnfm6"]
 
 [ext_resource type="Script" uid="uid://dww0nmakrlhl0" path="res://scripts/MyCamera.gd" id="1_yqjtg"]
+[ext_resource type="Script" uid="uid://2qqfbml4pjt7" path="res://scripts/PauseMenu.gd" id="3_lnu2h"]
 [ext_resource type="Script" uid="uid://cj2y7drjlcgm5" path="res://scripts/GridManager.gd" id="7_gee14"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_lnu2h"]
+font_size = 32
 
 [node name="Node2D" type="Node2D" unique_id=448664739]
 
@@ -17,3 +21,71 @@ theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 0
 columns = 12
 script = ExtResource("7_gee14")
+
+[node name="Pause Menu" type="CanvasLayer" parent="." unique_id=138412790]
+script = ExtResource("3_lnu2h")
+
+[node name="ColorRect" type="ColorRect" parent="Pause Menu" unique_id=260564159]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+color = Color(1, 1, 1, 0.2509804)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Pause Menu" unique_id=1752196350]
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -85.0
+offset_top = -173.5
+offset_right = 85.0
+offset_bottom = 37.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Title" type="Label" parent="Pause Menu/VBoxContainer" unique_id=701541993]
+layout_mode = 2
+text = "Settings"
+label_settings = SubResource("LabelSettings_lnu2h")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Continue Button" type="Button" parent="Pause Menu/VBoxContainer" unique_id=994738441]
+layout_mode = 2
+text = "Continue"
+
+[node name="Reset Button" type="Button" parent="Pause Menu/VBoxContainer" unique_id=258976354]
+layout_mode = 2
+text = "Reset"
+
+[node name="Difficulty Dropdown" type="OptionButton" parent="Pause Menu/VBoxContainer" unique_id=1392762060]
+layout_mode = 2
+selected = 0
+search_bar_enabled = true
+item_count = 3
+popup/item_0/text = "Easy Difficulty"
+popup/item_0/id = 0
+popup/item_1/text = "Medium Difficulty"
+popup/item_1/id = 1
+popup/item_2/text = "Hard Difficulty"
+popup/item_2/id = 2
+
+[node name="Mode Dropdown" type="OptionButton" parent="Pause Menu/VBoxContainer" unique_id=323111023]
+layout_mode = 2
+selected = 0
+search_bar_enabled = true
+item_count = 2
+popup/item_0/text = "Normal Mode"
+popup/item_0/id = 0
+popup/item_1/text = "Custom Mode"
+popup/item_1/id = 1
+
+[node name="Quit Button" type="Button" parent="Pause Menu/VBoxContainer" unique_id=1449534975]
+layout_mode = 2
+text = "Quit"

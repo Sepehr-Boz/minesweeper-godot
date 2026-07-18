@@ -15,11 +15,19 @@ var _border_cell_asset: PackedScene = preload("res://scenes/border_cell.tscn")
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _cells: Array[Array] = []
 
+@onready var _pause_menu: CanvasLayer = $"../Pause Menu"
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	generate_grid(_width)
 
-func generate_grid(width) -> void:
+func destroy_grid() -> void:
+	for child in get_children():
+		remove_child(child)
+		child.queue_free()
+	_cells.clear()
+
+func generate_grid(width: int = _width) -> void:
 	columns = width + 2 # surrounding left and right and top and down cells are
 	# for borders
 	size = Vector2i(columns * 48, columns * 48)
@@ -93,7 +101,10 @@ func generate_grid(width) -> void:
 	_camera.zoom = Vector2(zoom, zoom)
 	_camera.position = grid_rect.get_center()
 
-	
+func generate_island(width: int = _width) -> void:
+	pass
+	# TODO: procedurally make a connected 'island' of width x width size
+	# TODO: where it is random how many cells are connected/spawned
 
 
 func _on_cell_changed(coord: Vector2i, state) -> void:
@@ -109,8 +120,7 @@ func _on_cell_changed(coord: Vector2i, state) -> void:
 					continue
 				await get_tree().create_timer(0.15).timeout
 				cell._is_bombed()
-		await get_tree().create_timer(2.0).timeout
-		get_tree().quit()
+		_pause_menu._on_esc()
 	elif _has_won():
 		print("you win the game")
 		get_tree().quit()
@@ -127,6 +137,7 @@ func _has_won() -> bool:
 func set_mode(mode: Mode) -> void:
 	if mode == _mode:
 		return
+	destroy_grid()
 	# if mode = NORMAL then make a rectangular grid
 	# if mode = CUSTOM then make a randomly-connected shape grid with cells that
 	# can show either surrounding square 8 or surrounding square 24
@@ -134,14 +145,13 @@ func set_mode(mode: Mode) -> void:
 	if _mode == Mode.NORMAL:
 		generate_grid(_width)
 	else:
-		# TODO
-		pass
+		generate_island(_width)
 
 func set_difficulty(diff: Difficulty) -> void:
 	# diffuclty determines max size of board and number of bombs
 	if diff == _difficulty:
 		return
-	
+	destroy_grid()
 	_difficulty = diff
 	if _difficulty == Difficulty.EASY:
 		_width = 8

@@ -2,6 +2,7 @@ extends GridContainer
 
 enum Mode {NORMAL, CUSTOM}
 enum Difficulty {EASY, MEDIUM, HARD}
+enum Neighbour {TOPLEFT, TOP, TOPRIGHT, LEFT, RIGHT, BOTTOMLEFT, BOTTOM, BOTTOMRIGHT}
 
 @export var _mode: Mode = Mode.NORMAL
 @export var _difficulty: Difficulty = Difficulty.EASY
@@ -20,6 +21,13 @@ var _cells: Array[Array] = []
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	generate_grid(_width)
+	
+func reset() -> void:
+	destroy_grid()
+	if _mode == Mode.NORMAL:
+		generate_grid()
+	else:
+		generate_island()
 
 func destroy_grid() -> void:
 	for child in get_children():
@@ -32,6 +40,8 @@ func generate_grid(width: int = _width) -> void:
 	# for borders
 	size = Vector2i(columns * 48, columns * 48)
 	
+	var bomb_spawn_chance: float = float(_num_bombs) * 2 / (pow(width, 2))
+	var num_bombs_to_spawn: int = _num_bombs
 	# spawn in all the cells into the container
 	for i in width + 2:
 		var row: Array[Node] = []
@@ -49,6 +59,9 @@ func generate_grid(width: int = _width) -> void:
 				instance.coordinate = Vector2i(i - 1, j - 1)
 				instance.on_cell_changed.connect(_on_cell_changed)
 				row.append(instance)
+				if num_bombs_to_spawn > 0 and _rng.randf() <= bomb_spawn_chance:
+					instance.has_bomb = true
+					num_bombs_to_spawn -= 1
 		if len(row) > 0:
 			_cells.append(row)
 		
@@ -78,18 +91,6 @@ func generate_grid(width: int = _width) -> void:
 				neighbours.append(_cells[i + 1][j + 1])
 			cell.neighbours = neighbours
 	
-	# place bombs on random cells
-	var _bombs_to_place: int = _num_bombs
-	while _bombs_to_place > 0:
-		var num: int = _rng.randi_range(0, width * width - 1)
-		var coord: Vector2i = Vector2i(num % width, num / width)
-		if _cells[coord.x][coord.y].has_bomb:
-			continue
-		else:
-			_cells[coord.x][coord.y].has_bomb = true
-			_bombs_to_place -= 1
-			print("bomb at %v" % coord)
-	
 	# set the camera properties
 	var vp: Vector2 = get_viewport_rect().size
 	print(vp)
@@ -102,9 +103,85 @@ func generate_grid(width: int = _width) -> void:
 	_camera.position = grid_rect.get_center()
 
 func generate_island(width: int = _width) -> void:
-	pass
-	# TODO: procedurally make a connected 'island' of width x width size
-	# TODO: where it is random how many cells are connected/spawned
+	columns = width + 2 # surrounding left and right and top and down cells are
+	# for borders
+	size = Vector2i(columns * 48, columns * 48)
+	
+	var has_cell: Array[Array] = []
+	for i in width:
+		var row: Array[bool] = []
+		for j in width:
+			row.append(_rng.randi_range(0, 1) == 1)
+		has_cell.append(row)
+	
+	var bomb_spawn_chance: float = float(_num_bombs) * 2 / (pow(width, 2))
+	var num_bombs_to_spawn: int = _num_bombs
+	# spawn in all the cells into the container
+	for i in width + 2:
+		var row: Array[Node] = []
+		for j in width + 2:
+			if i == 0 or i == width + 1 or j == 0 or j == width + 1:
+				var instance: Node = _border_cell_asset.instantiate()
+				add_child(instance)
+			elif has_cell[i - 1][j - 1]:
+				var instance: Node
+				if (i + j) % 2 == 0:
+					instance = _grid_cell_asset.instantiate()
+				else:
+					instance = _grid_cell_asset2.instantiate()
+				add_child(instance)
+				instance.coordinate = Vector2i(i - 1, j - 1)
+				instance.on_cell_changed.connect(_on_cell_changed)
+				row.append(instance)
+				if num_bombs_to_spawn > 0 and _rng.randf() <= bomb_spawn_chance:
+					instance.has_bomb = true
+					num_bombs_to_spawn -= 1
+			else:
+				var instance: Node = _border_cell_asset.instantiate()
+				add_child(instance)
+				row.append(null)
+		if len(row) > 0:
+			_cells.append(row)
+	
+	# loop through all the cells to find their neighbours and add them
+	for i in width:
+		for j in width:
+			var cell: Node = _cells[i][j]
+			if cell == null:
+				continue
+			var neighbours: Array[Node] = []
+			# top row
+			if 0 < i and 0 < j:
+				neighbours.append(_cells[i - 1][j - 1])
+			if 0 < j:
+				neighbours.append(_cells[i][j - 1])
+			if 0 < j and i < width - 1:
+				neighbours.append(_cells[i + 1][j - 1])
+			# middle row
+			if 0 < i:
+				neighbours.append(_cells[i - 1][j])
+			if i < width - 1:
+				neighbours.append(_cells[i + 1][j])
+			# bottom row
+			if 0 < i and j < width - 1:
+				neighbours.append(_cells[i - 1][j + 1])
+			if j < width - 1:
+				neighbours.append(_cells[i][j + 1])
+			if j < width - 1 and i < width - 1:
+				neighbours.append(_cells[i + 1][j + 1])
+			cell.neighbours = neighbours
+			print(neighbours)
+	
+	# set the camera properties
+	var vp: Vector2 = get_viewport_rect().size
+	print(vp)
+	var grid_size: Vector2 = Vector2(float(width) * 48, float(width) * 48)
+	print(grid_size)
+	var grid_rect: Rect2 = Rect2(Vector2.ZERO, Vector2((width + 2) * 48, (width + 2) * 48))
+	var zoom: float = min(vp.x / grid_size.x, vp.y / grid_size.y)
+	_camera.rect = grid_rect
+	_camera.zoom = Vector2(zoom, zoom)
+	_camera.position = grid_rect.get_center()
 
 
 func _on_cell_changed(coord: Vector2i, state) -> void:
@@ -116,10 +193,9 @@ func _on_cell_changed(coord: Vector2i, state) -> void:
 		# then quit at the end
 		for row in _cells:
 			for cell in row:
-				if not cell.has_bomb:
-					continue
-				await get_tree().create_timer(0.15).timeout
-				cell._is_bombed()
+				if cell != null and cell.has_bomb:
+					await get_tree().create_timer(0.15).timeout
+					cell._is_bombed()
 		_pause_menu._on_esc()
 	elif _has_won():
 		print("you win the game")
@@ -130,6 +206,8 @@ func _has_won() -> bool:
 	# cell if the cell is also flagged
 	for row in _cells:
 		for cell in row:
+			if not cell:
+				continue
 			if cell.has_bomb and not cell._state == 2: # 2 = FLAGGED
 				return false
 	return true
@@ -156,12 +234,13 @@ func set_difficulty(diff: Difficulty) -> void:
 	if _difficulty == Difficulty.EASY:
 		_width = 8
 		_num_bombs = 16
-		generate_grid(_width)
 	elif _difficulty == Difficulty.MEDIUM:
 		_width = 12
 		_num_bombs = 24
-		generate_grid(_width)
 	elif _difficulty == Difficulty.HARD:
 		_width = 18
 		_num_bombs = 36
+	if _mode == Mode.NORMAL:
 		generate_grid(_width)
+	else:
+		generate_island(_width)

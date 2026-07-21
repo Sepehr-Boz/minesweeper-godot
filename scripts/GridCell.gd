@@ -41,6 +41,8 @@ func _gui_input(event: InputEvent) -> void:
 func _get_num_bombs() -> int:
 	var num: int = 0
 	for cell: Node in neighbours:
+		if not cell:
+			continue
 		if cell.has_bomb:
 			num += 1
 	return num
@@ -48,6 +50,8 @@ func _get_num_bombs() -> int:
 func _get_num_flags() -> int:
 	var num: int = 0
 	for cell: Node in neighbours:
+		if not cell:
+			continue
 		if cell._state == CellState.FLAGGED:
 			num += 1
 	return num
@@ -59,6 +63,8 @@ func expand() -> void:
 	_state = CellState.SHOWN
 	if _get_num_bombs() == 0 and not has_bomb:
 		for cell in neighbours:
+			if not cell:
+				continue
 			cell.expand()
 
 func _is_shown() -> void:

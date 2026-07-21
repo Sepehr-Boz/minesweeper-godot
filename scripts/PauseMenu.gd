@@ -29,8 +29,8 @@ func _on_esc() -> void:
 		Engine.time_scale = 1
 
 func _reset_game() -> void:
-	_grid_manager.destroy_grid()
-	_grid_manager.generate_grid()
+	_grid_manager.reset()
+	_on_esc()
 
 func _set_difficulty(item_index: int) -> void:
 	_grid_manager.set_difficulty(item_index)

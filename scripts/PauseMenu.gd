@@ -1,5 +1,6 @@
 extends CanvasLayer
 
+@onready var _title: Label = $"VBoxContainer/Title"
 @onready var _continue_button: Button = $"VBoxContainer/Continue Button"
 @onready var _reset_button: Button = $"VBoxContainer/Reset Button"
 @onready var _difficulty_dropdown: OptionButton = $"VBoxContainer/Difficulty Dropdown"
@@ -22,6 +23,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		_on_esc()
 
 func _on_esc() -> void:
+	_title.text = "Settings"
+	_continue_button.visible = true
 	visible = not visible
 	if visible:
 		Engine.time_scale = 0
@@ -40,3 +43,9 @@ func _set_mode(item_index: int) -> void:
 
 func _quit_game() -> void:
 	get_tree().quit()
+	
+func game_finished(win: bool) -> void:
+	_continue_button.visible = win
+	_title.text = "You Won!" if win else "You Lost!"
+	visible = true
+	Engine.time_scale = 0

@@ -12,12 +12,18 @@ border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.2484003, 0.24840015, 0.24840003, 1)
+border_color = Color(0.19607843, 0.19607843, 0.19607843, 1)
+border_blend = true
+corner_detail = 4
+
+[sub_resource type="Gradient" id="Gradient_vhfhy"]
+colors = PackedColorArray(1, 0, 0, 1, 1, 1, 0, 1)
 
 [node name="Grid Cell" type="Button" unique_id=116335418]
 propagate_maximum_size = true
 offset_right = 32.0
 offset_bottom = 32.0
+pivot_offset = Vector2(16, 16)
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0, 0, 0, 1)
@@ -31,3 +37,20 @@ icon = ExtResource("1_vhfhy")
 icon_alignment = 1
 expand_icon = true
 script = ExtResource("2_xqw7n")
+
+[node name="Explode Particles" type="CPUParticles2D" parent="." unique_id=1018607326]
+position = Vector2(16, 16)
+emitting = false
+amount = 50
+one_shot = true
+explosiveness = 1.0
+emission_shape = 6
+emission_ring_inner_radius = 0.8
+emission_ring_radius = 1.0
+particle_flag_align_y = true
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 8.0
+initial_velocity_max = 24.0
+scale_amount_max = 4.0
+color_ramp = SubResource("Gradient_vhfhy")

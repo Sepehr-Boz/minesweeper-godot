@@ -3,19 +3,21 @@ extends GridContainer
 enum Mode {NORMAL, CUSTOM}
 enum Difficulty {EASY, MEDIUM, HARD}
 enum Neighbour {TOPLEFT, TOP, TOPRIGHT, LEFT, RIGHT, BOTTOMLEFT, BOTTOM, BOTTOMRIGHT}
+signal on_cell_flagged(num_flags_remaining: int)
 
 @export var _mode: Mode = Mode.NORMAL
-@export var _difficulty: Difficulty = Difficulty.EASY
+@export var _difficulty: Difficulty = Difficulty.MEDIUM
 @export var _width: int = 16
 @export var _num_bombs: int = 16
 
 var _grid_cell_asset: PackedScene = preload("res://scenes/grid_cell.tscn")
 var _grid_cell_asset2: PackedScene = preload("res://scenes/grid_cell_2.tscn")
 var _border_cell_asset: PackedScene = preload("res://scenes/border_cell.tscn")
-@onready var _camera: Camera2D = $"../Camera2D"
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _cells: Array[Array] = []
+var _num_flags: int = 0
 
+@onready var _camera: Camera2D = $"../Camera2D"
 @onready var _pause_menu: CanvasLayer = $"../Pause Menu"
 
 # Called when the node enters the scene tree for the first time.
@@ -34,6 +36,8 @@ func destroy_grid() -> void:
 		remove_child(child)
 		child.queue_free()
 	_cells.clear()
+	
+	on_cell_flagged.emit(0)
 
 func generate_grid(width: int = _width) -> void:
 	columns = width + 2 # surrounding left and right and top and down cells are
@@ -101,6 +105,8 @@ func generate_grid(width: int = _width) -> void:
 	_camera.rect = grid_rect
 	_camera.zoom = Vector2(zoom, zoom)
 	_camera.position = grid_rect.get_center()
+	
+	on_cell_flagged.emit(_num_bombs - _num_flags)
 
 func generate_island(width: int = _width) -> void:
 	columns = width + 2 # surrounding left and right and top and down cells are
@@ -182,6 +188,8 @@ func generate_island(width: int = _width) -> void:
 	_camera.rect = grid_rect
 	_camera.zoom = Vector2(zoom, zoom)
 	_camera.position = grid_rect.get_center()
+	
+	on_cell_flagged.emit(_num_bombs - _num_flags)
 
 
 func _on_cell_changed(coord: Vector2i, state) -> void:
@@ -196,10 +204,14 @@ func _on_cell_changed(coord: Vector2i, state) -> void:
 				if cell != null and cell.has_bomb:
 					await get_tree().create_timer(0.15).timeout
 					cell._is_bombed()
-		_pause_menu._on_esc()
+		_pause_menu.game_finished(false)
 	elif _has_won():
 		print("you win the game")
+		_pause_menu.game_finished(true)
 		get_tree().quit()
+	elif state == 2: # 2 = FLAGGED
+		_num_flags += 1
+		on_cell_flagged.emit(_num_bombs - _num_flags)
 
 func _has_won() -> bool:
 	# brute force search: loop through all nodes and check if for each has_bomb
@@ -235,11 +247,11 @@ func set_difficulty(diff: Difficulty) -> void:
 		_width = 8
 		_num_bombs = 16
 	elif _difficulty == Difficulty.MEDIUM:
-		_width = 12
-		_num_bombs = 24
+		_width = 16
+		_num_bombs = 32
 	elif _difficulty == Difficulty.HARD:
-		_width = 18
-		_num_bombs = 36
+		_width = 32
+		_num_bombs = 64
 	if _mode == Mode.NORMAL:
 		generate_grid(_width)
 	else:

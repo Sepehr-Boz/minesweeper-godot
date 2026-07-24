@@ -4,8 +4,10 @@ enum CellState {HIDDEN, SHOWN, FLAGGED, BOMBED}
 signal on_cell_changed(coord: Vector2i, state: CellState)
 
 var _flag_icon: Texture2D = preload("res://textures/flag_triangle.png")
-var _bomb_icon: Texture2D = preload("res://textures/fire.png")
+var _bomb_icon: Texture2D = preload("res://textures/unlit-bomb.png")
+@onready var _explode_particles: CPUParticles2D = $"Explode Particles"
 
+var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var neighbours: Array = []
 var coordinate: Vector2i = Vector2i.ZERO
 var has_bomb: bool = false
@@ -75,11 +77,16 @@ func _is_shown() -> void:
 		text = "%d" % _get_num_bombs()
 	icon = null
 	self.disabled = true
+	var tween = get_tree().create_tween()
+	tween.tween_property(self, "rotation_degrees", _rng.randi_range(-15, 15), 0.1)
+	tween.tween_property(self, "rotation_degrees", 0, 0.1)
 
 func _is_bombed() -> void:
 	text = ""
 	icon = _bomb_icon
 	self.disabled = true
+	_explode_particles.position = size / 2
+	_explode_particles.restart()
 
 func _is_flagged() -> void:
 	text = ""

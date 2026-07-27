@@ -9,4 +9,4 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	_time_passed += delta
-	text = "[img height=1.25em color=000000ff]textures/stopwatch.png[/img] [b][color=000000ff]%d[/color][/b]" % roundi(_time_passed)
+	text = "[img height=1.25em color=ffffffff]textures/stopwatch.png[/img] [b][color=ffffffff]%d[/color][/b]" % roundi(_time_passed)

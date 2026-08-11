@@ -212,6 +212,9 @@ func _on_cell_changed(coord: Vector2i, state) -> void:
 	elif state == 2: # 2 = FLAGGED
 		_num_flags += 1
 		on_cell_flagged.emit(_num_bombs - _num_flags)
+	elif state == 0: # 0 = HIDDEN, will only trigger when was flagged and then unflagged
+		_num_flags -= 1
+		on_cell_flagged.emit(_num_bombs - _num_flags)
 
 func _has_won() -> bool:
 	# brute force search: loop through all nodes and check if for each has_bomb
